@@ -33,9 +33,29 @@ public class PlayFabLogin : MonoBehaviour
         Debug.Log(message);
 
         await GetPlayerDataAsync();
-        var s = await GetPlayerDisplayNameAsync();
+        await GetPlayerDisplayNameAsync();
 
-        Debug.Log(s);
+        var jsonString = await GetTitleDataAsync();
+        var monsterData = JsonUtility.FromJson<MonstersArray>(jsonString);
+
+        if(monsterData != null)
+        {
+            for (int i = 0; i < monsterData.monsters.Length; i++)
+            {
+                Debug.Log(monsterData.monsters[i].name + " HP" + monsterData.monsters[i].hp);
+            }
+        }
+
+        var jsonItems = await GetItemDataAsync();
+        var itemData = JsonUtility.FromJson<ItemsArray>(jsonItems);
+
+        if (itemData != null)
+        {
+            for (int i = 0; i < itemData.items.Length; i++)
+            {
+                Debug.Log(itemData.items[i].name + " Price" + itemData.items[i].price);
+            }
+        }
 
         _wasLogin = true;
     }
@@ -101,4 +121,73 @@ public class PlayFabLogin : MonoBehaviour
         }
         return "";
     }
+
+    private async UniTask<string> GetTitleDataAsync()
+    {
+        var request = new GetTitleDataRequest
+        {
+            Keys = new List<string> { "monster" }
+        };
+
+        var responce = await PlayFabClientAPI.GetTitleDataAsync(request);
+
+        if(responce.Error != null)
+        {
+            Debug.Log(responce.Error.GenerateErrorReport());
+        }
+        else
+        {
+            return responce.Result.Data["monster"];
+        }
+
+        return "";
+    }
+
+    private async UniTask<string> GetItemDataAsync()
+    {
+        var request = new GetTitleDataRequest
+        {
+            Keys = new List<string> { "item" }
+        };
+
+        var responce = await PlayFabClientAPI.GetTitleDataAsync(request);
+
+        if(responce.Error != null)
+        {
+            Debug.Log(responce.Error.GenerateErrorReport());
+        }
+        else
+        {
+            return responce.Result.Data["item"];
+        }
+
+        return "";
+    }
+}
+
+[System.Serializable]
+public class MonsterData
+{
+    public int id;
+    public int hp;
+    public string name;
+    public bool isHuman;
+}
+public class MonstersArray
+{
+    public MonsterData[] monsters;
+}
+
+[System.Serializable]
+public class ItemData
+{
+    public int id;
+    public string name;
+    public string efficacy;
+    public int price;
+}
+
+public class ItemsArray
+{
+    public ItemData[] items;
 }
