@@ -12,6 +12,9 @@ public class Presenter : MonoBehaviour
     [SerializeField]
     private View _view;
 
+    [SerializeField]
+    private GachaView _gachaView;
+
     private async void Start()
     {
         await UniTask.WaitUntil(() => _pl.WasLogin);
@@ -23,5 +26,10 @@ public class Presenter : MonoBehaviour
 
         _view.ObserveEveryValueChanged(x => x.DisplayName).Skip(1)
             .Subscribe(x => _pl.UpdateDisplayName(x));
+
+        _view.OnClickGachaButtonDelegate += _pl.DrawGacha;
+
+        _gachaView.ObserveEveryValueChanged(x => x.isActiveAndEnabled)
+            .Subscribe(x => _view.gameObject.SetActive(!x));
     }
 }

@@ -10,6 +10,8 @@ public class View : MonoBehaviour
 
     public bool IsMan => _isMan;
 
+    public System.Action OnClickGachaButtonDelegate;
+
     [SerializeField]
     private Button _manButton;
 
@@ -25,6 +27,12 @@ public class View : MonoBehaviour
     [SerializeField]
     private TMP_InputField _inputField;
 
+    [SerializeField]
+    private Button _gachaButton;
+
+    [SerializeField]
+    private GameObject _gachaPanel;
+
     private bool _isMan = false;
 
     public void Init(bool flag, string name)
@@ -38,6 +46,8 @@ public class View : MonoBehaviour
 
         _manButton.onClick.AddListener(OnClickManButton);
         _womanButton.onClick.AddListener(OnClickWomanButton);
+
+        _gachaButton.onClick.AddListener(OnClickGachaButton);
     }
 
     private void OnClickManButton()
@@ -54,5 +64,13 @@ public class View : MonoBehaviour
 
         _manCheck.enabled = _isMan;
         _womanCheck.enabled = !_isMan;
+    }
+
+    private void OnClickGachaButton()
+    {
+        //OnClickGachaButtonDelegate?.Invoke();
+
+        _gachaPanel.SetActive(true);
+        gameObject.SetActive(false);
     }
 }
